@@ -114,3 +114,35 @@ export function toCard(p: Package): CardPkg {
     perks: perkTests.filter(([, re]) => re.test(inc)).map(([k]) => k),
   };
 }
+
+/* ---------- Header mega-menu (built on the server, passed to the client header) ---------- */
+export type MenuDest = { slug: string; name: string; count: number; image: string | null };
+export type MenuPkg = { slug: string; title: string; duration: string; price: number | null; image: string | null };
+export type NavMenu = { domesticDest: MenuDest[]; internationalDest: MenuDest[]; domestic: MenuPkg[]; international: MenuPkg[] };
+
+/** Drop the site's repeated "… Tour Package(s) from Bangalore" tail so names fit a menu. */
+const menuName = (n: string) =>
+  n.replace(/\s*(tour\s+)?packages?\s+from\s+bangalore.*$/i, "").replace(/\s*tour\s+packages?$/i, "").trim() || n;
+
+/** A destination's region, taken from its packages (more reliable than the listing's own tag). */
+function destRegion(d: Destination): Package["region"] {
+  const list = packagesIn(d);
+  if (!list.length) return d.region;
+  return list.filter((p) => p.region === "International").length > list.length / 2 ? "International" : "Domestic";
+}
+
+export function navMenu(): NavMenu {
+  const dests = destinations.filter((d) => d.count > 0);
+  const toDest = (d: Destination): MenuDest => ({
+    slug: d.slug, name: menuName(d.name), count: d.count,
+    image: d.image ?? packagesIn(d).map(firstImage).find(Boolean) ?? null, // no cover on the site → its first package photo
+  });
+  const toPkg = (p: Package): MenuPkg => ({ slug: p.slug, title: p.title, duration: p.duration, price: p.price, image: firstImage(p) });
+  const byName = (a: MenuDest, b: MenuDest) => a.name.localeCompare(b.name);
+  return {
+    domesticDest: dests.filter((d) => destRegion(d) === "Domestic").map(toDest).sort(byName),
+    internationalDest: dests.filter((d) => destRegion(d) === "International").map(toDest).sort(byName),
+    domestic: packages.filter((p) => p.region === "Domestic").map(toPkg),
+    international: packages.filter((p) => p.region === "International").map(toPkg),
+  };
+}

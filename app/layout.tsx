@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { QuoteProvider } from "@/components/Quote";
 import { contact } from "@/data/site";
+import { navMenu } from "@/lib/content";
 import "./globals.css";
 
 const sans = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={sans.variable}>
       <body>
         <QuoteProvider>
-          <Header />
+          <Header menu={navMenu()} />
           <main>{children}</main>
           <Footer />
           <Floating />

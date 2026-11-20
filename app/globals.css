@@ -681,3 +681,64 @@ ul { margin: 0; padding: 0; list-style: none; }
   .rail--pkg { grid-auto-columns: 82%; }
   .grid--pkg, .grid--pkg3, .explorer .grid--pkg { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   Header mega menus (Destinations / Domestic / International)
+   ========================================================================== */
+.header__bar { position: relative; }
+.navi { display: contents; }              /* not positioned: panels anchor to .header__bar, so .pills' scroll can't clip them */
+div.navi { display: block; flex: none; }
+.pill__chev { width: 14px; height: 14px; margin-left: -2px; opacity: .6; transition: transform .2s; }
+.pill.is-open { background: #fff; border-color: var(--line); box-shadow: var(--shadow); color: var(--ink); }
+.pill.is-open .pill__chev { transform: rotate(180deg); opacity: 1; }
+
+.mega {
+  position: absolute; left: 20px; right: 20px; top: 100%; z-index: 60;
+  opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s, transform .18s, visibility .18s;
+}
+.mega::before { content: ""; position: absolute; left: 0; right: 0; top: -16px; height: 16px; } /* hover bridge from the pill */
+.mega.is-open { opacity: 1; visibility: visible; transform: none; }
+.mega__inner {
+  background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 50px rgba(0,0,0,.14);
+  padding: 22px 24px 0; max-height: calc(100vh - 170px); overflow-y: auto; overscroll-behavior: contain;
+}
+.mega__grid--dest { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.mega__h { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+.mega__h small { background: var(--soft); color: var(--ink-2); border-radius: 20px; padding: 2px 8px; font-size: 11px; letter-spacing: 0; }
+.mega__dests, .mega__pkgs { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px 14px; }
+.mega__dests { grid-template-columns: 1fr 1fr; }
+.mega__pkgs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mega__dest, .mega__pkg { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 12px; transition: background .15s; min-width: 0; }
+.mega__dest:hover, .mega__pkg:hover, .mega__dest:focus-visible, .mega__pkg:focus-visible { background: var(--soft); }
+.mega__dest > span:last-child, .mega__pkg > span:last-child { display: grid; gap: 2px; min-width: 0; }
+.mega__dest strong, .mega__pkg strong { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.35; overflow-wrap: anywhere; }
+.mega__dest:hover strong, .mega__pkg:hover strong { color: var(--brand, var(--ink)); }
+.mega__dest small, .mega__pkg small { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.mega__pkg small .icon { width: 13px; height: 13px; }
+.mega__pkg small b { color: var(--ink); font-weight: 700; }
+.mega__thumb { position: relative; flex: none; width: 44px; height: 44px; border-radius: 10px; overflow: hidden; background: var(--soft); display: grid; place-items: center; font-size: 18px; }
+.mega__thumb img { object-fit: cover; }
+.mega__thumb--lg { width: 64px; height: 52px; }
+.mega__foot { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--line); margin-top: 14px; padding: 12px 0 14px; display: flex; justify-content: flex-end; }
+.mega__foot a { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13.5px; color: var(--ink); }
+.mega__foot a:hover { text-decoration: underline; }
+.mega__foot .icon { width: 16px; height: 16px; }
+
+@media (max-width: 1280px) {
+  .mega__pkgs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mega__dests { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .mega, .pill__chev { display: none; }   /* phones/tablets use the drawer's expandable sections */
+}
+.drawer details[open] summary .icon { transform: rotate(180deg); }
+.drawer summary .icon { transition: transform .2s; }
+/* Pills keep their full width; the search box gives way first */
+.pills { flex: 0 1 auto; min-width: 0; }
+.hsearch { flex: 1 0 190px; max-width: 280px; }
+@media (max-width: 900px) { .hsearch { max-width: none; } }
+@media (min-width: 901px) and (max-width: 1280px) { .pill > span[aria-hidden] { display: none; } }
+@media (min-width: 901px) and (max-width: 1100px) {
+  .header__bar { flex-direction: column-reverse; align-items: stretch; gap: 12px; }
+  .hsearch { max-width: none; flex: none; }
+}
