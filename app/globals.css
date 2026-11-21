@@ -761,7 +761,7 @@ div.navi { display: block; flex: none; }
 /* Pills keep their full width; the search box gives way first */
 .pills { flex: 0 1 auto; min-width: 0; }
 .hsearch { flex: 1 0 190px; max-width: 280px; }
-@media (max-width: 900px) { .hsearch { max-width: none; } }
+@media (max-width: 900px) { .hsearch { flex: none; max-width: none; } }   /* column layout: flex-basis would set height */
 @media (min-width: 901px) and (max-width: 1000px) { .hsearch { flex-basis: 160px; } }
 
 /* ==========================================================================
