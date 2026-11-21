@@ -8,7 +8,7 @@ import Hero from "@/components/Hero";
 import Icon from "@/components/Icon";
 import Rail from "@/components/Rail";
 import { contact, home, stats, testimonials, waLink, whyChoose } from "@/data/site";
-import { aboutText, banners, destinations, faqGroups, featured, packages, posts, toCard } from "@/lib/content";
+import { aboutText, banners, destinations, faqGroups, featured, navMenu, packages, posts, toCard } from "@/lib/content";
 
 const popular = destinations.filter((d) => d.image);
 const domestic = packages.filter((p) => p.region === "Domestic");
@@ -153,7 +153,7 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="shead"><div><h2>Explore Destinations</h2></div></div>
-          <Directory destinations={destinations} />
+          <Directory menu={navMenu()} />
         </div>
       </section>
     </>
