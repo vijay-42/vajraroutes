@@ -6,11 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { contact, nav, waLink } from "@/data/site";
 import type { MenuLink, MenuPkg, NavMenu, SpecialtyCard } from "@/lib/content";
+import { pkgName, short } from "@/lib/names";
 import Icon from "./Icon";
 import { QuoteButton } from "./Quote";
-
-/** Dropdowns drop the trailing "from Bangalore" to keep entries short. */
-const short = (t: string) => t.replace(/\s*from Bangalore\b/i, "").trim();
 
 const inr = (n: number | null) => (n == null ? "" : "₹" + n.toLocaleString("en-IN"));
 
@@ -33,7 +31,7 @@ function PkgList({ items }: { items: MenuPkg[] }) {
           <Link href={`/packages/${p.slug}`} className="mega__pkg">
             <span className="mega__thumb mega__thumb--lg">{p.image ? <Image src={p.image} alt="" fill sizes="64px" /> : "🧳"}</span>
             <span>
-              <strong>{short(p.title)}</strong>
+              <strong>{pkgName(p.title)}</strong>
               <small><Icon name="clock" /> {p.duration}{p.price ? <> · <b>{inr(p.price)}</b></> : null}</small>
             </span>
           </Link>
@@ -255,7 +253,7 @@ export default function Header({ menu }: { menu: NavMenu }) {
                 {k === "specialty"
                   ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label} ({s.count})</Link>)
                   : k === "upcoming"
-                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{short(p.title)}</Link>)
+                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{pkgName(p.title)}</Link>)
                     : menu[k].map((l) => <Link key={l.href} href={l.href}>{short(l.label)}</Link>)}
               </details>
             ))}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { inr, type CardPkg, type Destination, type Perk } from "@/lib/content";
+import { pkgName } from "@/lib/names";
 import Icon from "./Icon";
 import Wish from "./Wish";
 
@@ -40,7 +41,7 @@ export function PackageCard({ p }: { p: CardPkg }) {
           <span className="tcard__where" title={p.destination}><Icon name="pin" />{p.destination}</span>
         </div>
 
-        <h3 className="tcard__title"><Link href={href}>{p.title}</Link></h3>
+        <h3 className="tcard__title"><Link href={href} title={p.title}>{pkgName(p.title)}</Link></h3>
 
         {p.perks.length > 0 && (
           <ul className="tcard__perks" aria-label="Included">
