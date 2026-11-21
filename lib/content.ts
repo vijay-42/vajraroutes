@@ -134,9 +134,7 @@ export const specialties: Specialty[] = [
     test: (p) => typeHas(/^(pilgrimage|spiritual tour package)$/i)(p) || pilgrimTitle.test(p.title) },
   { slug: "honeymoon", label: "Honeymoon", emoji: "💑", test: typeHas(/^honeymoon$/i) },
   { slug: "family", label: "Family", emoji: "👨‍👩‍👧", test: typeHas(/^family$/i) },
-  { slug: "leisure", label: "Leisure", emoji: "🏖️", test: typeHas(/^leisure$/i) },
   { slug: "adventure", label: "Adventure", emoji: "🏔️", test: typeHas(/^adventure$/i) },
-  { slug: "friends", label: "Friends", emoji: "🧑‍🤝‍🧑", test: typeHas(/^friends$/i) },
   { slug: "group-tours", label: "Group Tours", emoji: "👥", test: typeHas(/^group tours?$/i) },
 ];
 export const getSpecialty = (slug: string) => specialties.find((s) => s.slug === slug);
