@@ -9,6 +9,9 @@ import type { MenuLink, MenuPkg, NavMenu, SpecialtyCard } from "@/lib/content";
 import Icon from "./Icon";
 import { QuoteButton } from "./Quote";
 
+/** Dropdowns drop the trailing "from Bangalore" to keep entries short. */
+const short = (t: string) => t.replace(/\s*from Bangalore\b/i, "").trim();
+
 const inr = (n: number | null) => (n == null ? "" : "₹" + n.toLocaleString("en-IN"));
 
 type MenuKey = "domestic" | "international" | "specialty" | "upcoming";
@@ -30,7 +33,7 @@ function PkgList({ items }: { items: MenuPkg[] }) {
           <Link href={`/packages/${p.slug}`} className="mega__pkg">
             <span className="mega__thumb mega__thumb--lg">{p.image ? <Image src={p.image} alt="" fill sizes="64px" /> : "🧳"}</span>
             <span>
-              <strong>{p.title}</strong>
+              <strong>{short(p.title)}</strong>
               <small><Icon name="clock" /> {p.duration}{p.price ? <> · <b>{inr(p.price)}</b></> : null}</small>
             </span>
           </Link>
@@ -40,12 +43,17 @@ function PkgList({ items }: { items: MenuPkg[] }) {
   );
 }
 
-/** Plain text links: one per destination collection. */
+/** One entry per destination collection: photo + name. */
 function LinkList({ items }: { items: MenuLink[] }) {
   return (
-    <ul className="mega__links">
+    <ul className="mega__pkgs">
       {items.map((l) => (
-        <li key={l.href}><Link href={l.href}>{l.label}</Link></li>
+        <li key={l.href}>
+          <Link href={l.href} className="mega__pkg">
+            <span className="mega__thumb mega__thumb--lg">{l.image ? <Image src={l.image} alt="" fill sizes="64px" /> : "🧳"}</span>
+            <span><strong>{short(l.label)}</strong></span>
+          </Link>
+        </li>
       ))}
     </ul>
   );
@@ -247,8 +255,8 @@ export default function Header({ menu }: { menu: NavMenu }) {
                 {k === "specialty"
                   ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label} ({s.count})</Link>)
                   : k === "upcoming"
-                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{p.title}</Link>)
-                    : menu[k].map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{short(p.title)}</Link>)
+                    : menu[k].map((l) => <Link key={l.href} href={l.href}>{short(l.label)}</Link>)}
               </details>
             ))}
             {nav.filter((c) => !menuFor[c.href]).map((c) => <Link key={c.href} href={c.href}>{c.label}</Link>)}

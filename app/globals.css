@@ -748,11 +748,6 @@ div.navi { display: block; flex: none; }
 .mega__foot .icon { width: 16px; height: 16px; }
 
 .mega__pkgs--spec { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.mega__links { list-style: none; margin: 0; padding: 0 0 4px; columns: 3; column-gap: 28px; }
-.mega__links li { break-inside: avoid; }
-.mega__links a { display: block; padding: 9px 10px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--ink); line-height: 1.35; transition: background .15s, color .15s; }
-.mega__links a:hover, .mega__links a:focus-visible { background: var(--soft); color: var(--brand, var(--ink)); }
-@media (max-width: 1280px) { .mega__links { columns: 2; } }
 .coll-empty { display: flex; justify-content: center; padding: 24px 0 8px; }
 @media (max-width: 1280px) {
   .mega__pkgs { grid-template-columns: repeat(2, minmax(0, 1fr)); }

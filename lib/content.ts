@@ -162,9 +162,12 @@ export const collectionHref = (r: Region, c: Collection) => `/${r}-tours/${colle
 export const getCollection = (r: Region, slug: string) => collections[r].find((c) => collectionSlug(c) === slug);
 export const packagesInCollection = (r: Region, c: Collection) =>
   packages.filter((p) => p.region === regionLabel[r] && c.match.test(`${p.title} ${p.destination}`));
-export type MenuLink = { href: string; label: string; count: number };
+export type MenuLink = { href: string; label: string; count: number; image: string | null };
 const menuLinks = (r: Region): MenuLink[] =>
-  collections[r].map((c) => ({ href: collectionHref(r, c), label: c.label, count: packagesInCollection(r, c).length }));
+  collections[r].map((c) => {
+    const items = packagesInCollection(r, c);
+    return { href: collectionHref(r, c), label: c.label, count: items.length, image: items.map(firstImage).find(Boolean) ?? null };
+  });
 
 /* ---------- Header mega-menu (built on the server, passed to the client header) ---------- */
 export type MenuPkg = { slug: string; title: string; duration: string; price: number | null; image: string | null };
