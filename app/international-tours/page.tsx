@@ -4,13 +4,13 @@ import PackageExplorer from "@/components/PackageExplorer";
 import PageHero from "@/components/PageHero";
 import { destinations, packages, toCard } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Domestic Tour Packages" };
-const items = packages.filter((p) => p.region === "Domestic");
+export const metadata: Metadata = { title: "International Tour Packages" };
+const items = packages.filter((p) => p.region === "International");
 
-export default function DomesticPackages() {
+export default function InternationalPackages() {
   return (
     <>
-      <PageHero title="Domestic Tour Packages" sub={`${items.length} packages available`} crumbs={[{ href: "/packages", label: "Tour Packages" }, { label: "Domestic Tour Packages" }]} />
+      <PageHero title="International Tour Packages" sub={`${items.length} packages available`} crumbs={[{ label: "International Tour Packages" }]} />
       <section className="section">
         <div className="container">
           <Suspense><PackageExplorer items={items.map(toCard)} destinations={destinations} /></Suspense>

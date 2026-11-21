@@ -25,11 +25,10 @@ export type IconName =
 
 /** Header category pills — the live site's navigation items. */
 export const nav = [
-  { emoji: "🗺️", label: "Destinations", href: "/destinations" },
-  { emoji: "🏔️", label: "Domestic Tours", href: "/packages/domestic" },
-  { emoji: "✈️", label: "International Tours", href: "/packages/international" },
-  { emoji: "🎒", label: "All Packages", href: "/packages" },
-  { emoji: "🧭", label: "Custom Itinerary", href: "/itinerary-builder" },
+  { emoji: "🏔️", label: "Domestic Tours", href: "/domestic-tours" },
+  { emoji: "✈️", label: "International Tours", href: "/international-tours" },
+  { emoji: "✨", label: "Specialty Packages", href: "/specialty-packages" },
+  { emoji: "📅", label: "Upcoming Trips", href: "/upcoming-trips" },
   { emoji: "📖", label: "Blog", href: "/blog" },
 ];
 
@@ -80,3 +79,36 @@ export const testimonials = [
     name: "Priya & Arjun Mehta", meta: "Couple, Mumbai",
   },
 ];
+
+/** Header dropdown collections (from the client's package sheet). Each links to
+ *  /{region}-tours/{key}-packages-from-bangalore; `match` picks its packages by title/destination. */
+export type Collection = { key: string; label: string; match: RegExp };
+export const collections: { domestic: Collection[]; international: Collection[] } = {
+  domestic: [
+    { key: "shirdi", label: "Shirdi tour packages from Bangalore", match: /shirdi/i },
+    { key: "varanasi-kashi", label: "Varanasi/Kashi tour packages from Bangalore", match: /varanasi|kashi/i },
+    { key: "puri-jagannath", label: "Puri Jagannath tour packages from Bangalore", match: /puri|jagannath/i },
+    { key: "kamakhya", label: "Kamakhya tour packages from Bangalore", match: /kamakhya/i },
+    { key: "rajasthan", label: "Rajasthan tour packages from Bangalore", match: /rajasthan|jaipur|udaipur|pushkar/i },
+    { key: "shimla-manali", label: "Shimla Manali tour packages from Bangalore", match: /shimla|manali/i },
+    { key: "kashmir", label: "Kashmir tour packages from Bangalore", match: /kashmir/i },
+    { key: "vaishnodevi", label: "Vaishnodevi tour packages from Bangalore", match: /vaishno/i },
+    { key: "indore-ujjain", label: "Indore Ujjain tour packages from Bangalore", match: /ujjain|indore|omkareshwar/i },
+    { key: "ayodhya", label: "Ayodhya tour packages from Bangalore", match: /ayodhya/i },
+    { key: "baidyanath", label: "Baidyanath tour packages from Bangalore", match: /baidyanath|baidhyanath|deoghar/i },
+    { key: "darjeeling", label: "Darjeeling tour packages from Bangalore", match: /darjeeling/i },
+  ],
+  international: [
+    { key: "nepal", label: "Nepal tour packages from Bangalore", match: /nepal|muktinath|kathmandu/i },
+    { key: "bhutan", label: "Bhutan tour packages from Bangalore", match: /bhutan/i },
+    { key: "kailash-mansarovar", label: "Kailash Mansarovar tour packages from Bangalore", match: /kailash/i },
+    { key: "phu-quoc", label: "Phu Quoc tour packages from Bangalore", match: /phu quoc/i },
+    { key: "vietnam", label: "Vietnam tour packages from Bangalore", match: /vietnam/i },
+    { key: "bali", label: "Bali tour packages from Bangalore", match: /bali/i },
+    { key: "japan", label: "Japan tour packages from Bangalore", match: /japan/i },
+    { key: "maldives", label: "Maldives tour packages from Bangalore", match: /maldives/i },
+    { key: "georgia", label: "Georgia tour packages from Bangalore", match: /georgia/i },
+    { key: "baku", label: "Baku tour packages from Bangalore", match: /baku|azerbaijan/i },
+    { key: "thailand", label: "Thailand tour packages from Bangalore", match: /thailand|bangkok|phuket/i },
+  ],
+};

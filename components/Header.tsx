@@ -5,34 +5,22 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { contact, nav, waLink } from "@/data/site";
-import type { MenuDest, MenuPkg, NavMenu } from "@/lib/content";
+import type { MenuLink, MenuPkg, NavMenu, SpecialtyCard } from "@/lib/content";
 import Icon from "./Icon";
 import { QuoteButton } from "./Quote";
 
 const inr = (n: number | null) => (n == null ? "" : "₹" + n.toLocaleString("en-IN"));
 
-type MenuKey = "dest" | "domestic" | "international";
+type MenuKey = "domestic" | "international" | "specialty" | "upcoming";
 const menuFor: Record<string, MenuKey> = {
-  "/destinations": "dest", "/packages/domestic": "domestic", "/packages/international": "international",
+  "/domestic-tours": "domestic", "/international-tours": "international", "/specialty-packages": "specialty", "/upcoming-trips": "upcoming",
 };
-
-function DestList({ title, items }: { title: string; items: MenuDest[] }) {
-  return (
-    <div className="mega__col">
-      <h4 className="mega__h">{title} <small>{items.length}</small></h4>
-      <ul className="mega__dests">
-        {items.map((d) => (
-          <li key={d.slug}>
-            <Link href={`/destinations/${d.slug}`} className="mega__dest">
-              <span className="mega__thumb">{d.image ? <Image src={d.image} alt="" fill sizes="44px" /> : "🗺️"}</span>
-              <span><strong>{d.name}</strong><small>{d.count} Tour {d.count === 1 ? "Package" : "Packages"}</small></span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+const menuInfo: Record<MenuKey, { href: string; label: string }> = {
+  domestic: { href: "/domestic-tours", label: "Domestic Tours" },
+  international: { href: "/international-tours", label: "International Tours" },
+  specialty: { href: "/specialty-packages", label: "Specialty Packages" },
+  upcoming: { href: "/upcoming-trips", label: "Upcoming Trips" },
+};
 
 function PkgList({ items }: { items: MenuPkg[] }) {
   return (
@@ -52,21 +40,54 @@ function PkgList({ items }: { items: MenuPkg[] }) {
   );
 }
 
+/** Plain text links: one per destination collection. */
+function LinkList({ items }: { items: MenuLink[] }) {
+  return (
+    <ul className="mega__links">
+      {items.map((l) => (
+        <li key={l.href}><Link href={l.href}>{l.label}</Link></li>
+      ))}
+    </ul>
+  );
+}
+
+function SpecialtyList({ items }: { items: SpecialtyCard[] }) {
+  return (
+    <ul className="mega__pkgs mega__pkgs--spec">
+      {items.map((s) => (
+        <li key={s.slug}>
+          <Link href={`/specialty-packages/${s.slug}`} className="mega__pkg">
+            <span className="mega__thumb mega__thumb--lg">{s.image ? <Image src={s.image} alt="" fill sizes="64px" /> : s.emoji}</span>
+            <span>
+              <strong><span aria-hidden="true">{s.emoji}</span> {s.label}</strong>
+              <small>{s.count} {s.count === 1 ? "package" : "packages"}</small>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function MegaPanel({ k, menu }: { k: MenuKey; menu: NavMenu }) {
-  if (k === "dest") {
+  const { href, label } = menuInfo[k];
+  if (k === "specialty") {
     return (
       <>
-        <div className="mega__grid mega__grid--dest">
-          <DestList title="Domestic" items={menu.domesticDest} />
-          <DestList title="International" items={menu.internationalDest} />
-        </div>
-        <div className="mega__foot"><Link href="/destinations">View All Destinations <Icon name="arrowRight" /></Link></div>
+        <SpecialtyList items={menu.specialty} />
+        <div className="mega__foot"><Link href={href}>View All {label} <Icon name="arrowRight" /></Link></div>
       </>
     );
   }
-  const items = k === "domestic" ? menu.domestic : menu.international;
-  const href = k === "domestic" ? "/packages/domestic" : "/packages/international";
-  const label = k === "domestic" ? "Domestic Tours" : "International Tours";
+  if (k === "domestic" || k === "international") {
+    return (
+      <>
+        <LinkList items={menu[k]} />
+        <div className="mega__foot"><Link href={href}>View All {label} <Icon name="arrowRight" /></Link></div>
+      </>
+    );
+  }
+  const items = menu[k];
   return (
     <>
       <PkgList items={items} />
@@ -83,11 +104,62 @@ export default function Header({ menu }: { menu: NavMenu }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const headerRef = useRef<HTMLElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const [tucked, setTucked] = useState(false);
+  const lockRef = useRef(false);   // never tuck while a mega menu or the drawer is open
+  useEffect(() => { lockRef.current = !!open || drawer; if (lockRef.current) setTucked(false); }, [open, drawer]);
+
+  // Scroll down → tuck the header away (desktop: just the logo/utility row, so the
+  // nav pills stay pinned; mobile: the whole header). Scroll up → bring it back.
+  // Uses transform only, so the page never jumps.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    onScroll();
+    const header = headerRef.current, top = topRef.current;
+    if (!header || !top) return;
+    const root = document.documentElement;
+    const mq = window.matchMedia("(max-width: 900px)");
+    let full = 0, shift = 0, lastY = window.scrollY, isTucked = false, frame = 0;
+
+    const apply = (t: boolean) => {
+      isTucked = t;
+      setTucked(t);
+      root.style.setProperty("--hdr-h", `${t ? full - shift : full}px`);  // used by sticky sidebars
+    };
+    const measure = () => {
+      full = header.offsetHeight;
+      shift = mq.matches ? full : top.offsetHeight;
+      header.style.setProperty("--hdr-shift", `${shift}px`);
+      apply(isTucked);
+    };
+    const update = () => {
+      frame = 0;
+      const y = Math.max(0, window.scrollY);
+      const dy = y - lastY;
+      setScrolled(y > 10);
+      if (y <= full) {                       // near the top: always fully shown
+        if (isTucked) apply(false);
+        lastY = y;
+        return;
+      }
+      if (Math.abs(dy) < 8) return;          // ignore jitter / tiny trackpad moves
+      if (dy > 0 && !isTucked && !lockRef.current && !header.querySelector("input:focus")) apply(true);
+      else if (dy < 0 && isTucked) apply(false);
+      lastY = y;
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+
+    measure();
+    update();
+    const ro = new ResizeObserver(measure);
+    ro.observe(header);
+    mq.addEventListener("change", measure);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener("change", measure);
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => { setDrawer(false); setOpen(null); }, [pathname]);
@@ -112,8 +184,8 @@ export default function Header({ menu }: { menu: NavMenu }) {
 
   return (
     <>
-      <header className={`header ${scrolled ? "is-scrolled" : ""}`}>
-        <div className="container header__top">
+      <header ref={headerRef} className={`header ${scrolled ? "is-scrolled" : ""} ${tucked ? "is-tucked" : ""}`}>
+        <div ref={topRef} className="container header__top">
           <Link href="/" className="logo" aria-label="Vajra Routes home">
             <Image src="/img/logo.jpg" alt="Vajra Routes logo" width={73} height={50} priority />
           </Link>
@@ -168,21 +240,17 @@ export default function Header({ menu }: { menu: NavMenu }) {
           </div>
           <nav>
             <Link href="/">Home</Link>
-            <details>
-              <summary>Destinations <Icon name="chevronDown" /></summary>
-              <Link href="/destinations">All Destinations</Link>
-              {[...menu.domesticDest, ...menu.internationalDest].map((d) => <Link key={d.slug} href={`/destinations/${d.slug}`}>{d.name}</Link>)}
-            </details>
-            <details>
-              <summary>Domestic Tours <Icon name="chevronDown" /></summary>
-              <Link href="/packages/domestic">All Domestic Tours</Link>
-              {menu.domestic.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{p.title}</Link>)}
-            </details>
-            <details>
-              <summary>International Tours <Icon name="chevronDown" /></summary>
-              <Link href="/packages/international">All International Tours</Link>
-              {menu.international.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{p.title}</Link>)}
-            </details>
+            {(Object.keys(menuInfo) as MenuKey[]).map((k) => (
+              <details key={k}>
+                <summary>{menuInfo[k].label} <Icon name="chevronDown" /></summary>
+                <Link href={menuInfo[k].href}>All {menuInfo[k].label}</Link>
+                {k === "specialty"
+                  ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label} ({s.count})</Link>)
+                  : k === "upcoming"
+                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{p.title}</Link>)
+                    : menu[k].map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+              </details>
+            ))}
             {nav.filter((c) => !menuFor[c.href]).map((c) => <Link key={c.href} href={c.href}>{c.label}</Link>)}
             <Link href="/gallery">Gallery</Link>
             <Link href="/about-us">About Us</Link>

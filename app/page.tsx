@@ -37,7 +37,7 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <Rail variant="pkg" title="Domestic Tour Packages" sub={`${domestic.length} packages available`} more={{ href: "/packages/domestic" }}>
+          <Rail variant="pkg" title="Domestic Tour Packages" sub={`${domestic.length} packages available`} more={{ href: "/domestic-tours" }}>
             {domestic.map((p) => <PackageCard key={p.slug} p={toCard(p)} />)}
           </Rail>
         </div>
@@ -45,7 +45,7 @@ export default function Home() {
 
       <section className="section section--soft">
         <div className="container">
-          <Rail variant="pkg" title="International Tour Packages" sub={`${international.length} packages available`} more={{ href: "/packages/international" }}>
+          <Rail variant="pkg" title="International Tour Packages" sub={`${international.length} packages available`} more={{ href: "/international-tours" }}>
             {international.map((p) => <PackageCard key={p.slug} p={toCard(p)} />)}
           </Rail>
         </div>

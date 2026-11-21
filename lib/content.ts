@@ -1,5 +1,6 @@
 // Typed access to data/content.json — every value in it was extracted from vajraroutes.com.
 import raw from "@/data/content.json";
+import { collections, type Collection } from "@/data/site";
 
 export type Itinerary = { day: string; title: string; lines: string[] };
 export type Package = {
@@ -115,34 +116,66 @@ export function toCard(p: Package): CardPkg {
   };
 }
 
-/* ---------- Header mega-menu (built on the server, passed to the client header) ---------- */
-export type MenuDest = { slug: string; name: string; count: number; image: string | null };
-export type MenuPkg = { slug: string; title: string; duration: string; price: number | null; image: string | null };
-export type NavMenu = { domesticDest: MenuDest[]; internationalDest: MenuDest[]; domestic: MenuPkg[]; international: MenuPkg[] };
+/* ---------- Upcoming trips ----------
+   The live site has no departure calendar, so these are its scheduled group departures:
+   packages typed "Group Tours" and the "Join In" packages. */
+export const upcoming = packages.filter((p) => /group tour/i.test(p.type) || /join.?in/i.test(p.title));
 
-/** Drop the site's repeated "… Tour Package(s) from Bangalore" tail so names fit a menu. */
-const menuName = (n: string) =>
-  n.replace(/\s*(tour\s+)?packages?\s+from\s+bangalore.*$/i, "").replace(/\s*tour\s+packages?$/i, "").trim() || n;
+/* ---------- Specialty packages ----------
+   Grouped by the tour type each package carries on the live site ("Pilgrimage",
+   "Spiritual Tour Package", "Family / Honeymoon / Leisure", "Group Tours", ...).
+   Generic types ("Standard", "Deluxe", "Domestic Tour Package") aren't specialties. */
+export type Specialty = { slug: string; label: string; emoji: string; test: (p: Package) => boolean };
+const typeHas = (word: RegExp) => (p: Package) => p.type.split(/[,/]/).some((t) => word.test(t.trim()));
+const pilgrimTitle = /pilgrimage|yatra|darshan|jyotirlinga|temple|vaishno devi/i;
 
-/** A destination's region, taken from its packages (more reliable than the listing's own tag). */
-function destRegion(d: Destination): Package["region"] {
-  const list = packagesIn(d);
-  if (!list.length) return d.region;
-  return list.filter((p) => p.region === "International").length > list.length / 2 ? "International" : "Domestic";
+export const specialties: Specialty[] = [
+  { slug: "pilgrimage", label: "Pilgrimage & Spiritual", emoji: "🛕",
+    test: (p) => typeHas(/^(pilgrimage|spiritual tour package)$/i)(p) || pilgrimTitle.test(p.title) },
+  { slug: "honeymoon", label: "Honeymoon", emoji: "💑", test: typeHas(/^honeymoon$/i) },
+  { slug: "family", label: "Family", emoji: "👨‍👩‍👧", test: typeHas(/^family$/i) },
+  { slug: "leisure", label: "Leisure", emoji: "🏖️", test: typeHas(/^leisure$/i) },
+  { slug: "adventure", label: "Adventure", emoji: "🏔️", test: typeHas(/^adventure$/i) },
+  { slug: "friends", label: "Friends", emoji: "🧑‍🤝‍🧑", test: typeHas(/^friends$/i) },
+  { slug: "group-tours", label: "Group Tours", emoji: "👥", test: typeHas(/^group tours?$/i) },
+];
+export const getSpecialty = (slug: string) => specialties.find((s) => s.slug === slug);
+export const packagesFor = (s: Specialty) => packages.filter(s.test);
+
+/** One card per specialty, each with a cover photo not already used by an earlier one where possible. */
+export type SpecialtyCard = { slug: string; label: string; emoji: string; count: number; image: string | null };
+export function specialtyCards(): SpecialtyCard[] {
+  const used = new Set<string>();
+  return specialties.map((s) => {
+    const items = packagesFor(s);
+    const pick = items.map(firstImage).find((img) => img && !used.has(img)) ?? (items[0] ? firstImage(items[0]) : null);
+    if (pick) used.add(pick);
+    return { slug: s.slug, label: s.label, emoji: s.emoji, count: items.length, image: pick };
+  }).filter((c) => c.count > 0);
 }
 
+/* ---------- Destination collections (header dropdowns) ---------- */
+export type Region = "domestic" | "international";
+export const regionLabel: Record<Region, string> = { domestic: "Domestic", international: "International" };
+export const collectionSlug = (c: Collection) => `${c.key}-packages-from-bangalore`;
+export const collectionHref = (r: Region, c: Collection) => `/${r}-tours/${collectionSlug(c)}`;
+export const getCollection = (r: Region, slug: string) => collections[r].find((c) => collectionSlug(c) === slug);
+export const packagesInCollection = (r: Region, c: Collection) =>
+  packages.filter((p) => p.region === regionLabel[r] && c.match.test(`${p.title} ${p.destination}`));
+export type MenuLink = { href: string; label: string; count: number };
+const menuLinks = (r: Region): MenuLink[] =>
+  collections[r].map((c) => ({ href: collectionHref(r, c), label: c.label, count: packagesInCollection(r, c).length }));
+
+/* ---------- Header mega-menu (built on the server, passed to the client header) ---------- */
+export type MenuPkg = { slug: string; title: string; duration: string; price: number | null; image: string | null };
+export type NavMenu = { domestic: MenuLink[]; international: MenuLink[]; upcoming: MenuPkg[]; specialty: SpecialtyCard[] };
+
 export function navMenu(): NavMenu {
-  const dests = destinations.filter((d) => d.count > 0);
-  const toDest = (d: Destination): MenuDest => ({
-    slug: d.slug, name: menuName(d.name), count: d.count,
-    image: d.image ?? packagesIn(d).map(firstImage).find(Boolean) ?? null, // no cover on the site → its first package photo
-  });
   const toPkg = (p: Package): MenuPkg => ({ slug: p.slug, title: p.title, duration: p.duration, price: p.price, image: firstImage(p) });
-  const byName = (a: MenuDest, b: MenuDest) => a.name.localeCompare(b.name);
   return {
-    domesticDest: dests.filter((d) => destRegion(d) === "Domestic").map(toDest).sort(byName),
-    internationalDest: dests.filter((d) => destRegion(d) === "International").map(toDest).sort(byName),
-    domestic: packages.filter((p) => p.region === "Domestic").map(toPkg),
-    international: packages.filter((p) => p.region === "International").map(toPkg),
+    domestic: menuLinks("domestic"),
+    international: menuLinks("international"),
+    upcoming: upcoming.map(toPkg),
+    specialty: specialtyCards(),
   };
 }
