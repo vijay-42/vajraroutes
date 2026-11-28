@@ -674,11 +674,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tcard__was { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; }
 .tcard__was s { color: #9a9a9a; }
 .tcard__was em { font-style: normal; font-weight: 700; font-size: 11.5px; color: var(--green); background: #e8f6ee; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
-.tcard__price strong { font-size: 22px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); margin-top: 4px; white-space: nowrap; }
-.tcard__price small { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
-.tcard__cta { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 14px; background: var(--black); color: #fff; font-size: 13px; font-weight: 700; border-radius: 99px; transition: background .2s, gap .2s; }
+.tcard__now { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; margin-top: 4px; }
+.tcard__price strong { font-size: 22px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); white-space: nowrap; }
+.tcard__price small { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.tcard__cta { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 14px; background: var(--gold); color: var(--black); font-size: 13px; font-weight: 700; border-radius: 99px; transition: background .2s, gap .2s; }
 .tcard__cta .icon { width: 15px; height: 15px; }
-.tcard:hover .tcard__cta { background: #333; gap: 9px; }
+.tcard:hover .tcard__cta { background: #d4920f; gap: 9px; }
 
 /* Very narrow cards: button goes full width under the price */
 @container (max-width: 290px) {

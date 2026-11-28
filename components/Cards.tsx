@@ -57,8 +57,7 @@ export function PackageCard({ p }: { p: CardPkg }) {
             {p.oldPrice ? (
               <span className="tcard__was"><s>{inr(p.oldPrice)}</s>{save > 0 && <em>Save {inr(save)}</em>}</span>
             ) : null}
-            <strong>{inr(p.price)}</strong>
-            <small>per person</small>
+            <span className="tcard__now"><strong>{inr(p.price)}</strong><small>per person</small></span>
           </div>
           <Link href={href} className="tcard__cta" aria-label={`View details: ${p.title}`}><span>View Details</span><Icon name="arrowRight" /></Link>
         </div>
