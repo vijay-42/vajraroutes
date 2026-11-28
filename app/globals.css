@@ -659,20 +659,19 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tcard__wish.is-on { color: #e8364f; }
 .tcard__wish.is-on .icon { fill: currentColor; }
 
-.tcard__body { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 14px 16px 16px; }
+.tcard__body { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 16px; }
 .tcard__tags { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .tcard__label { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #8a5a00; background: #fdf1d6; padding: 4px 8px; border-radius: 6px; }
-.tcard__where { display: flex; align-items: flex-start; gap: 4px; font-size: 12px; line-height: 1.4; color: var(--muted); }
-.tcard__where .icon { flex: none; width: 13px; height: 13px; margin-top: 2px; }
-.tcard__title { font-size: 15.5px; font-weight: 700; line-height: 1.35; margin-top: 8px; }
+/* Always two lines tall so titles, inclusions and prices line up across a row */
+.tcard__title { font-size: 16px; font-weight: 700; line-height: 1.35; margin-top: 10px; min-height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tcard__title a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-.tcard__perks { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 2px; margin-top: 12px; padding: 10px 6px; background: var(--soft); border-radius: 12px; }
+.tcard__perks { display: flex; justify-content: space-around; gap: 4px; margin-top: 14px; padding: 10px 2px; background: var(--soft); border: 1px solid #efefef; border-radius: 12px; }
 .tcard__perks li { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; text-align: center; }
-.tcard__perks li span { font-size: 18px; line-height: 1; }
-.tcard__perks li small { max-width: 100%; font-size: 10.5px; font-weight: 600; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tcard__perks li span { font-size: 17px; line-height: 1; }
+.tcard__perks li small { max-width: 100%; font-size: 9.5px; letter-spacing: -.02em; font-weight: 600; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.tcard__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); }
+.tcard__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid #f0f0f0; }
 .tcard__perks + .tcard__foot, .tcard__title + .tcard__foot { margin-top: 14px; }
 .tcard__body > .tcard__foot:last-child { margin-top: auto; }
 .tcard__price { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
@@ -681,16 +680,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tcard__was em { font-style: normal; font-weight: 700; font-size: 11.5px; color: var(--green); background: #e8f6ee; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
 .tcard__price strong { font-size: 22px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); margin-top: 4px; white-space: nowrap; }
 .tcard__price small { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
-.tcard__cta { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 42px; padding: 0 16px; background: var(--black); color: #fff; font-size: 13px; font-weight: 700; border-radius: 99px; transition: background .2s, gap .2s; }
+.tcard__cta { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 14px; background: var(--black); color: #fff; font-size: 13px; font-weight: 700; border-radius: 99px; transition: background .2s, gap .2s; }
 .tcard__cta .icon { width: 15px; height: 15px; }
 .tcard:hover .tcard__cta { background: #333; gap: 9px; }
 
-/* Narrow cards: nothing truncated — inclusions become wrapping chips, button goes full width under the price */
-@container (max-width: 400px) {
-  .tcard__perks { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; background: none; }
-  .tcard__perks li { flex-direction: row; gap: 5px; padding: 5px 9px; border-radius: 99px; background: var(--soft); border: 1px solid #ececec; }
-  .tcard__perks li span { font-size: 13px; }
-  .tcard__perks li small { font-size: 11.5px; overflow: visible; }
+/* Very narrow cards: button goes full width under the price */
+@container (max-width: 290px) {
   .tcard__foot { flex-direction: column; align-items: stretch; gap: 12px; }
   .tcard__cta { width: 100%; }
 }

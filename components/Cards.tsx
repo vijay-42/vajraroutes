@@ -19,6 +19,8 @@ export function CityCard({ d }: { d: Destination }) {
 }
 
 const perkIcon: Record<Perk, string> = { Flights: "✈️", Hotel: "🏨", Meals: "🍽️", Sightseeing: "📸", Transfers: "🚐" };
+/** Short names so all five fit one row on narrow cards; the full name is the tooltip. */
+const perkShort: Record<Perk, string> = { Flights: "Flights", Hotel: "Hotel", Meals: "Meals", Sightseeing: "Sightseeing", Transfers: "Transfers" };
 
 /** Tour package card. */
 export function PackageCard({ p }: { p: CardPkg }) {
@@ -38,7 +40,6 @@ export function PackageCard({ p }: { p: CardPkg }) {
       <div className="tcard__body">
         <div className="tcard__tags">
           <span className="tcard__label">{p.label}</span>
-          <span className="tcard__where" title={p.destination}><Icon name="pin" />{p.destination}</span>
         </div>
 
         <h3 className="tcard__title"><Link href={href} title={p.title}>{pkgName(p.title)}</Link></h3>
@@ -46,7 +47,7 @@ export function PackageCard({ p }: { p: CardPkg }) {
         {p.perks.length > 0 && (
           <ul className="tcard__perks" aria-label="Included">
             {p.perks.map((k) => (
-              <li key={k} title={k}><span aria-hidden="true">{perkIcon[k]}</span><small>{k}</small></li>
+              <li key={k} title={k}><span aria-hidden="true">{perkIcon[k]}</span><small>{perkShort[k]}</small></li>
             ))}
           </ul>
         )}
