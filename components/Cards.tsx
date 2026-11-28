@@ -24,6 +24,7 @@ const perkIcon: Record<Perk, IconName> = { Flights: "plane", Hotel: "hotel", Mea
 /** Tour package card. */
 export function PackageCard({ p }: { p: CardPkg }) {
   const href = p.href;
+  const save = p.oldPrice && p.price ? p.oldPrice - p.price : 0;
 
   return (
     <article className="tcard">
@@ -48,6 +49,7 @@ export function PackageCard({ p }: { p: CardPkg }) {
 
         <div className="tcard__foot">
           <div className="tcard__price">
+            {save > 0 && <span className="tcard__was"><s>{inr(p.oldPrice)}</s><em>Save {inr(save)}</em></span>}
             <span className="tcard__now"><strong>{inr(p.price)}</strong><small>per person</small></span>
           </div>
           <Link href={href} className="tcard__cta" aria-label={`View details: ${p.title}`}><span>View Details</span><Icon name="arrowRight" /></Link>

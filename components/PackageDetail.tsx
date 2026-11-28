@@ -96,6 +96,7 @@ export default function PackageDetail({ p }: { p: Package }) {
 
           <aside className="pdp__side">
             <div className="pricebox">
+              {p.oldPrice && p.price && p.oldPrice > p.price ? <div className="pricebox__was"><s>{inr(p.oldPrice)}</s><span className="badge badge--save static">Save {inr(p.oldPrice - p.price)}</span></div> : null}
               <div className="pricebox__now">{inr(p.price)} <small>per person</small></div>
               <QuoteButton className="btn btn--black btn--block btn--lg" destination={p.title}>Book Now</QuoteButton>
               <a className="btn btn--wa btn--block" href={waLink(`Hi Vajra Routes, I'm interested in: ${p.title}`)} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp Us</a>
