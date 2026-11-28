@@ -21,7 +21,7 @@ export type IconName =
   | "camera" | "car" | "pin" | "clock" | "search" | "calendar" | "phone" | "mail"
   | "whatsapp" | "shield" | "tag" | "headset" | "edit" | "chevronDown" | "chevronLeft"
   | "chevronRight" | "arrowRight" | "menu" | "close" | "plus" | "play" | "check"
-  | "facebook" | "instagram" | "youtube" | "map" | "sparkle";
+  | "facebook" | "instagram" | "youtube" | "map" | "sparkle" | "meal";
 
 /** Header category pills — the live site's navigation items. */
 export const nav = [

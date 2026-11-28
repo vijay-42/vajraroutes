@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Icon from "./Icon";
 
 /** Rayna-style photo grid (1 large + up to 4 small) with a full-screen viewer. */
-export default function PackageGallery({ images, title, off }: { images: string[]; title: string; off: number | null }) {
+export default function PackageGallery({ images, title }: { images: string[]; title: string }) {
   const [open, setOpen] = useState<number | null>(null);
   const n = images.length;
 
@@ -29,7 +29,6 @@ export default function PackageGallery({ images, title, off }: { images: string[
       <div className={`pgal pgal--${Math.min(n, 5)}`}>
         <button className="pgal__main" onClick={() => setOpen(0)} aria-label="View photos">
           <Image src={images[0]} alt={title} fill priority sizes="(max-width: 900px) 100vw, 760px" />
-          {off ? <span className="badge badge--save">{off}% OFF</span> : null}
         </button>
         {thumbs.map((src, i) => (
           <button key={src} className="pgal__thumb" onClick={() => setOpen(i + 1)} aria-label={`View photo ${i + 2}`}>

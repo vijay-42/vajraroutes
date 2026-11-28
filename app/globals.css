@@ -655,19 +655,19 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tcard__wish.is-on { color: #e8364f; }
 .tcard__wish.is-on .icon { fill: currentColor; }
 
-.tcard__body { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 16px; }
-.tcard__tags { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.tcard__label { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #8a5a00; background: #fdf1d6; padding: 4px 8px; border-radius: 6px; }
-/* Always two lines tall so titles, inclusions and prices line up across a row */
-.tcard__title { font-size: 16px; font-weight: 700; line-height: 1.35; margin-top: 10px; min-height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tcard__body { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: 14px 16px 16px; }
+.tcard__label { position: absolute; top: 12px; left: 12px; max-width: calc(100% - 70px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--black); background: var(--gold); padding: 5px 10px; border-radius: 99px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+
+.tcard__title { font-size: 16px; font-weight: 700; line-height: 1.35; min-height: 2.7em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tcard__title a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-.tcard__perks { display: flex; justify-content: space-around; gap: 4px; margin-top: 14px; padding: 10px 2px; background: var(--soft); border: 1px solid #efefef; border-radius: 12px; }
-.tcard__perks li { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; text-align: center; }
-.tcard__perks li span { font-size: 17px; line-height: 1; }
-.tcard__perks li small { max-width: 100%; font-size: 9.5px; letter-spacing: -.02em; font-weight: 600; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tcard__perks { display: flex; justify-content: space-between; gap: 4px; margin: 12px 0 14px; }
+.tcard__perks li { flex: 0 1 auto; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; text-align: center; }
+.tcard__perk-ico { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #fdf1d6; color: #8a5a00; }
+.tcard__perk-ico .icon { width: 16px; height: 16px; }
+.tcard__perks li small { max-width: 100%; font-size: 10px; letter-spacing: -.01em; font-weight: 600; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.tcard__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.tcard__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px dashed #e6e6e6; }
 .tcard__perks + .tcard__foot, .tcard__title + .tcard__foot { margin-top: 14px; }
 .tcard__body > .tcard__foot:last-child { margin-top: auto; }
 .tcard__price { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
@@ -689,7 +689,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Wide cards (single column on phones): roomier */
 @container (min-width: 420px) {
   .tcard__title { font-size: 17px; }
-  .tcard__perks li small { font-size: 11.5px; }
+  .tcard__perks li small { font-size: 11px; }
 }
 
 .rail--pkg { grid-auto-columns: calc((100% - 54px) / 4); align-items: stretch; }
@@ -787,3 +787,8 @@ div.navi { display: block; flex: none; }
 .spec-intro__body ul { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; margin-bottom: 22px; font-size: 14px; font-weight: 600; }
 .spec-intro__body li { color: var(--ink); }
 @media (max-width: 800px) { .spec-intro { grid-template-columns: 1fr; gap: 18px; } .spec-intro__body ul { grid-template-columns: 1fr; } }
+
+/* Destination (collection) page intro */
+.dest-intro__title { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.spec-intro__body .rich { margin: 10px 0 16px; }
+.spec-intro__body .dest-intro__title + ul { margin-top: 14px; }

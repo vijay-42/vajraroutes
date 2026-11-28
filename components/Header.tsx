@@ -28,7 +28,7 @@ function PkgList({ items }: { items: MenuPkg[] }) {
     <ul className="mega__pkgs">
       {items.map((p) => (
         <li key={p.slug}>
-          <Link href={`/packages/${p.slug}`} className="mega__pkg">
+          <Link href={p.href} className="mega__pkg">
             <span className="mega__thumb mega__thumb--lg">{p.image ? <Image src={p.image} alt="" fill sizes="64px" /> : "🧳"}</span>
             <span>
               <strong>{pkgName(p.title)}</strong>
@@ -253,7 +253,7 @@ export default function Header({ menu }: { menu: NavMenu }) {
                 {k === "specialty"
                   ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label}{s.count ? ` (${s.count})` : ""}</Link>)
                   : k === "upcoming"
-                    ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{pkgName(p.title)}</Link>)
+                    ? menu.upcoming.map((p) => <Link key={p.slug} href={p.href}>{pkgName(p.title)}</Link>)
                     : menu[k].map((l) => <Link key={l.href} href={l.href}>{short(l.label)}</Link>)}
               </details>
             ))}

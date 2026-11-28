@@ -87,7 +87,7 @@ export const firstImage = (p: Package) => p.images[0] ?? null;
 /* ---------- Card view model: only what a tour card needs ---------- */
 export type Perk = "Flights" | "Hotel" | "Meals" | "Sightseeing" | "Transfers";
 export type CardPkg = {
-  slug: string; title: string; duration: string; short: string; days: number;
+  slug: string; href: string; title: string; duration: string; short: string; days: number;
   destination: string; destinationSlug: string | null; label: string; region: Package["region"];
   price: number | null; oldPrice: number | null; off: number | null; image: string | null; perks: Perk[];
 };
@@ -109,7 +109,7 @@ function cardLabel(p: Package) {
 export function toCard(p: Package): CardPkg {
   const inc = p.inclusions.join(" | ") + " | " + p.title;
   return {
-    slug: p.slug, title: p.title, duration: p.duration, short: shortDuration(p), days: durationDays(p),
+    slug: p.slug, href: packageHref(p), title: p.title, duration: p.duration, short: shortDuration(p), days: durationDays(p),
     destination: p.destination, destinationSlug: p.destinationSlug, label: cardLabel(p), region: p.region,
     price: p.price, oldPrice: p.oldPrice, off: p.off, image: firstImage(p),
     perks: perkTests.filter(([, re]) => re.test(inc)).map(([k]) => k),
@@ -198,12 +198,48 @@ const menuLinks = (r: Region): MenuLink[] =>
     return { href: collectionHref(r, c), label: c.label, count: items.length, image: items.map(firstImage).find(Boolean) ?? null };
   });
 
+/** Destination tiles for the category pages: one per collection that has packages. */
+export type DestTile = { href: string; label: string; count: number; image: string | null; from: number | null };
+export const destinationTiles = (r: Region): DestTile[] =>
+  collections[r].flatMap((c) => {
+    const items = packagesInCollection(r, c);
+    if (!items.length) return [];
+    const prices = items.map((p) => p.price).filter((n): n is number => n != null);
+    return [{ href: collectionHref(r, c), label: c.label, count: items.length, image: items.map(firstImage).find(Boolean) ?? null, from: prices.length ? Math.min(...prices) : null }];
+  });
+/** Scraped destination write-up for a collection, when vajraroutes.com has one. */
+export const collectionDescription = (r: Region, c: Collection) =>
+  destinations.find((d) => d.region === regionLabel[r] && d.description && c.match.test(d.name))?.description ?? null;
+
+/* ---------- Package URLs ----------
+   /{domestic|international}-tours/{destination}/{package}. {destination} is the
+   collection slug, so trimming the last segment lands on the destination page. */
+const regionOf = (p: Package): Region => (p.region === "Domestic" ? "domestic" : "international");
+export const collectionOf = (p: Package) => collections[regionOf(p)].find((c) => c.match.test(`${p.title} ${p.destination}`));
+export function packagePath(p: Package) {
+  const region = regionOf(p);
+  const c = collectionOf(p);
+  const base = `/${region}-tours`;
+  const dest = c ? collectionSlug(c) : (p.destinationSlug ?? "tours");
+  return { base, dest, region, collection: c, href: `${base}/${dest}/${p.slug}` };
+}
+export const packageHref = (p: Package) => packagePath(p).href;
+/** Package at a given base + destination + slug, only if that is its canonical URL. */
+export const packageAt = (base: string, dest: string, slug: string) => {
+  const p = getPackage(slug);
+  if (!p) return undefined;
+  const path = packagePath(p);
+  return path.base === base && path.dest === dest ? p : undefined;
+};
+export const packageParams = (base: string) =>
+  packages.map(packagePath).filter((x) => x.base === base).map((x) => ({ dest: x.dest, pkg: x.href.split("/").pop()! }));
+
 /* ---------- Header mega-menu (built on the server, passed to the client header) ---------- */
-export type MenuPkg = { slug: string; title: string; duration: string; price: number | null; image: string | null };
+export type MenuPkg = { slug: string; href: string; title: string; duration: string; price: number | null; image: string | null };
 export type NavMenu = { domestic: MenuLink[]; international: MenuLink[]; upcoming: MenuPkg[]; specialty: SpecialtyCard[] };
 
 export function navMenu(): NavMenu {
-  const toPkg = (p: Package): MenuPkg => ({ slug: p.slug, title: p.title, duration: p.duration, price: p.price, image: firstImage(p) });
+  const toPkg = (p: Package): MenuPkg => ({ slug: p.slug, href: packageHref(p), title: p.title, duration: p.duration, price: p.price, image: firstImage(p) });
   return {
     domestic: menuLinks("domestic"),
     international: menuLinks("international"),
