@@ -92,13 +92,6 @@ export default function Home() {
                   <span className="review__play"><span><Icon name="play" /></span></span>
                   <span className="review__vtitle">{r.videoTitle}</span>
                 </a>
-                <div className="review__body">
-                  <blockquote>&ldquo;{r.quote}&rdquo;</blockquote>
-                  <div className="review__who">
-                    <span className="avatar">{r.name[0]}</span>
-                    <span><strong>{r.name}</strong><small>{r.meta}</small></span>
-                  </div>
-                </div>
               </article>
             ))}
           </Rail>
