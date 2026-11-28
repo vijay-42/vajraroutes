@@ -11,3 +11,13 @@ export const pkgName = (t: string) => {
   s = parts.find((x) => /package/i.test(x)) ?? parts[0] ?? s;
   return s.replace(/\s+(with|including)\s+flights.*$/i, "").replace(/\s{2,}/g, " ").trim();
 };
+
+/** Destination cards show just the place: "Kashmir Tour package from Bangalore" → "Kashmir". */
+export const destName = (t: string) =>
+  short(t)
+    .split(/\s+I\s+/).slice(0, 2).join(" · ")   // "Puri Jagannath I Bhubaneshwar I …" → first two stops
+    .replace(/\s+(with|including)\s+flights\b/gi, "")
+    .replace(/\s*\b(tour\s+)?packages?\b/gi, "")
+    .replace(/\s+[-–|]\s*$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();

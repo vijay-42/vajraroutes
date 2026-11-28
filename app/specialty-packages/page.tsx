@@ -15,12 +15,12 @@ export default function SpecialtyPackages() {
         <div className="container">
           <div className="spec-grid">
             {cards.map((c) => (
-              <Link key={c.slug} href={`/specialty-packages/${c.slug}`} className="spec-card">
+              <Link key={c.slug} href={`/specialty-packages/${c.slug}`} className={`spec-card${c.image ? "" : " spec-card--noimg"}`}>
                 {c.image && <Image src={c.image} alt="" fill sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw" />}
                 <span className="spec-card__body">
                   <span className="spec-card__emoji" aria-hidden="true">{c.emoji}</span>
                   <strong>{c.label}</strong>
-                  <small>{c.count} {c.count === 1 ? "package" : "packages"}</small>
+                  <small>{c.count ? <>{c.count} {c.count === 1 ? "package" : "packages"}</> : null}</small>
                 </span>
               </Link>
             ))}

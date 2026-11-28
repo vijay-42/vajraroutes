@@ -66,7 +66,7 @@ function SpecialtyList({ items }: { items: SpecialtyCard[] }) {
             <span className="mega__thumb mega__thumb--lg">{s.image ? <Image src={s.image} alt="" fill sizes="64px" /> : s.emoji}</span>
             <span>
               <strong><span aria-hidden="true">{s.emoji}</span> {s.label}</strong>
-              <small>{s.count} {s.count === 1 ? "package" : "packages"}</small>
+              <small>{s.count ? <>{s.count} {s.count === 1 ? "package" : "packages"}</> : null}</small>
             </span>
           </Link>
         </li>
@@ -251,7 +251,7 @@ export default function Header({ menu }: { menu: NavMenu }) {
                 <summary>{menuInfo[k].label} <Icon name="chevronDown" /></summary>
                 <Link href={menuInfo[k].href}>All {menuInfo[k].label}</Link>
                 {k === "specialty"
-                  ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label} ({s.count})</Link>)
+                  ? menu.specialty.map((s) => <Link key={s.slug} href={`/specialty-packages/${s.slug}`}>{s.emoji} {s.label}{s.count ? ` (${s.count})` : ""}</Link>)
                   : k === "upcoming"
                     ? menu.upcoming.map((p) => <Link key={p.slug} href={`/packages/${p.slug}`}>{pkgName(p.title)}</Link>)
                     : menu[k].map((l) => <Link key={l.href} href={l.href}>{short(l.label)}</Link>)}

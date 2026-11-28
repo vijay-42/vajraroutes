@@ -125,17 +125,47 @@ export const upcoming = packages.filter((p) => /group tour/i.test(p.type) || /jo
    Grouped by the tour type each package carries on the live site ("Pilgrimage",
    "Spiritual Tour Package", "Family / Honeymoon / Leisure", "Group Tours", ...).
    Generic types ("Standard", "Deluxe", "Domestic Tour Package") aren't specialties. */
-export type Specialty = { slug: string; label: string; emoji: string; test: (p: Package) => boolean };
+export type Specialty = {
+  slug: string; label: string; emoji: string; test: (p: Package) => boolean;
+  /** Package whose photos stand in when the type has no packages of its own yet. */
+  cover?: RegExp;
+  intro: string; highlights: string[];
+};
 const typeHas = (word: RegExp) => (p: Package) => p.type.split(/[,/]/).some((t) => word.test(t.trim()));
 const pilgrimTitle = /pilgrimage|yatra|darshan|jyotirlinga|temple|vaishno devi/i;
 
 export const specialties: Specialty[] = [
   { slug: "pilgrimage", label: "Pilgrimage & Spiritual", emoji: "🛕",
-    test: (p) => typeHas(/^(pilgrimage|spiritual tour package)$/i)(p) || pilgrimTitle.test(p.title) },
-  { slug: "honeymoon", label: "Honeymoon", emoji: "💑", test: typeHas(/^honeymoon$/i) },
-  { slug: "family", label: "Family", emoji: "👨‍👩‍👧", test: typeHas(/^family$/i) },
-  { slug: "adventure", label: "Adventure", emoji: "🏔️", test: typeHas(/^adventure$/i) },
-  { slug: "group-tours", label: "Group Tours", emoji: "👥", test: typeHas(/^group tours?$/i) },
+    test: (p) => typeHas(/^(pilgrimage|spiritual tour package)$/i)(p) || pilgrimTitle.test(p.title),
+    intro: "Temple darshans, Jyotirlingas and sacred yatras, planned so you can focus on the journey and not the logistics.",
+    highlights: ["Kashi, Ayodhya, Puri, Shirdi, Ujjain, Kamakhya & more", "Darshan-focused itineraries", "Departures from Bangalore", "Flights included on many packages"] },
+  { slug: "womens", label: "Women's", emoji: "👩", test: typeHas(/^women'?s?$/i), cover: /kashmir heavenly retreat/i,
+    intro: "Trips for women travelling solo, with friends or as a group, with comfortable stays, sensible pacing and an itinerary built around what you want to see.",
+    highlights: ["Solo, friends or group bookings", "Stays chosen for comfort", "Itinerary tailored to your group", "Domestic & international destinations"] },
+  { slug: "mens", label: "Men's", emoji: "👨", test: typeHas(/^men'?s?$/i), cover: /leh ladakh/i,
+    intro: "Getaways for friends, colleagues or solo travellers, from mountain drives to beach breaks and city stays.",
+    highlights: ["Friends, office & solo trips", "Adventure or relaxed pace", "Custom itinerary on request", "Domestic & international options"] },
+  { slug: "honeymoon", label: "Honeymoon", emoji: "💑", test: typeHas(/^honeymoon$/i),
+    intro: "Romantic escapes for newly-weds, from the valleys of Kashmir to the beaches of Bali and Thailand.",
+    highlights: ["Couple-friendly stays", "Domestic & international destinations", "Flexible travel dates", "Itinerary tailored to you"] },
+  { slug: "senior-citizen", label: "Senior Citizen", emoji: "👵", test: typeHas(/^senior citizens?$/i), cover: /kailash mansarovar aerial/i,
+    intro: "Relaxed, well-paced tours for senior travellers, with comfortable stays, less rushing and more time at every stop, including pilgrimages.",
+    highlights: ["Easy-paced itineraries", "Flights included on many packages", "Pilgrimage & sightseeing options", "Planned around your needs"] },
+  { slug: "student", label: "Student", emoji: "🎓", test: typeHas(/^students?$/i), cover: /shimla & manali/i,
+    intro: "Educational and fun trips for school and college groups, combining sightseeing, culture and a little adventure in one plan.",
+    highlights: ["School & college groups", "Educational & adventure stops", "Group-friendly stays", "Custom itinerary & quote"] },
+  { slug: "luxury", label: "Luxury", emoji: "💎", test: typeHas(/^luxury$/i), cover: /5 star cruise/i,
+    intro: "Premium tours with upscale stays and all-inclusive comfort, in the style of our premium Rajasthan, Himachal and Vietnam packages.",
+    highlights: ["Premium & 5-star stays", "All-inclusive packages with flights", "Curated sightseeing", "Tailored to your preferences"] },
+  { slug: "family", label: "Family", emoji: "👨‍👩‍👧", test: typeHas(/^family$/i),
+    intro: "Holidays the whole family can enjoy, with easy itineraries, comfortable stays and sightseeing for all ages.",
+    highlights: ["Plans for kids & elders", "Domestic & international destinations", "Flights on selected packages", "Custom itinerary on request"] },
+  { slug: "adventure", label: "Adventure", emoji: "🏔️", test: typeHas(/^adventure$/i),
+    intro: "Mountain passes, high-altitude lakes and islands, for travellers who want more than sightseeing.",
+    highlights: ["Scenic drives & outdoor activities", "Mountains, lakes & islands", "Custom itinerary on request", "Departures from Bangalore"] },
+  { slug: "group-tours", label: "Group Tours", emoji: "👥", test: typeHas(/^group tours?$/i),
+    intro: "Scheduled group departures: join fellow travellers on fixed-date trips.",
+    highlights: ["Fixed departure dates", "Join-in packages", "Travel with like-minded people", "Domestic & international trips"] },
 ];
 export const getSpecialty = (slug: string) => specialties.find((s) => s.slug === slug);
 export const packagesFor = (s: Specialty) => packages.filter(s.test);
@@ -146,10 +176,11 @@ export function specialtyCards(): SpecialtyCard[] {
   const used = new Set<string>();
   return specialties.map((s) => {
     const items = packagesFor(s);
-    const pick = items.map(firstImage).find((img) => img && !used.has(img)) ?? (items[0] ? firstImage(items[0]) : null);
+    const pool = items.length ? items.map(firstImage) : (packages.find((p) => s.cover?.test(p.title))?.images ?? []);
+    const pick = pool.find((img) => img && !used.has(img)) ?? pool[0] ?? null;
     if (pick) used.add(pick);
     return { slug: s.slug, label: s.label, emoji: s.emoji, count: items.length, image: pick };
-  }).filter((c) => c.count > 0);
+  });   // types from the live site's menu are listed even before they have packages
 }
 
 /* ---------- Destination collections (header dropdowns) ---------- */

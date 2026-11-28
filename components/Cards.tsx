@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { inr, type CardPkg, type Destination, type Perk } from "@/lib/content";
-import { pkgName } from "@/lib/names";
+import { destName, pkgName } from "@/lib/names";
 import Icon from "./Icon";
 import Wish from "./Wish";
 
@@ -12,8 +12,8 @@ export function CityCard({ d }: { d: Destination }) {
       <div className="city__img">
         {d.image ? <Image src={d.image} alt={d.name} fill sizes="(max-width: 640px) 42vw, 200px" /> : <span className="noimg">🗺️</span>}
       </div>
-      <strong>{d.name}</strong>
-      <small>{d.count} Tour Packages</small>
+      <strong title={d.name}>{destName(d.name)}</strong>
+      <small>{d.count} Tour {d.count === 1 ? "Package" : "Packages"}</small>
     </Link>
   );
 }
